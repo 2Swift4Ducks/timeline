@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Zeitstrahl</title>
+		<style type="text/css">
+			* {
+				margin: 0px;
+				padding: 0px;
+				font-size: 16px;
+			}
+			body {
+				background-color: #262626;
+				justify-content: center;
+				align-items: center;
+				display: flex;
+				width: 100%;
+				height: 100%;
+			}
+			html {
+				width: 100%;
+				height: 100%;
+			}
+			span {
+				color: #EEEEEE;
+			}
+			.event-container {
+				border: 1px solid #444444;
+				border-radius: 16px;
+				background-color: #262626;
+				
+				padding: 16px;
+				margin: 16px;
+				display: grid;
+				grid-template-columns: 256px;
+				grid-template-rows: 256px 32px 32px;
+			}
+			.event-img {
+				width: 256px;
+				height: 256px;
+				border-radius: 16px;
+				border: none;
+			}
+			#timeline-container {
+				border: 1px solid #444444;
+				box-shadow: inset 0px 0px 10px #000000;
+				border-radius: 16px;
+				width: calc(100% - 200px);
+				height: 700px;
+				background-color: #191919;
+				display: flex;
+				justify-content: flex-start;
+				align-items: center;
+				flex-direction: row;
+				overflow-x: auto;
+			}
+			.event-date {
+				font-size: 24px;
+				text-decoration: underline;
+			}
+			#background {
+				background-color: rgba(0, 0, 0, 0.25);
+				display: none;
+				position: absolute;
+				top: 0%; 
+				left: 0%;
+				width: 100%;
+				height: 100%;
+				justify-content: center;
+				align-items: center;
+			}
+			#info-container {
+				background-color: #262626;
+				border: 1px solid #444444;
+				border-radius: 16px;
+				display: grid;
+				grid-template-areas:
+				"a b"
+				"c c"
+				"d d";
+				grid-template-columns: 1fr 1fr;
+				grid-template-rows: 64px 1fr 48px;
+				width: 800px;
+				height: 500px;
+			}
+			#info-name {
+				grid-area: a;
+				justify-self: center;
+				align-self: center;
+				font-size: 24px;
+			}
+			#info-date {
+				grid-area: b;
+				justify-self: center;
+				align-self: center;
+				font-size: 24px;
+			}
+			#info-description {
+				border: 1px solid #444444;
+				border-radius: 16px;
+				grid-area: c;
+				background-color: #191919;
+				width: calc(100% - 64px);
+				height: calc(100% - 64px);
+				padding: 16px;
+				justify-self: center;
+				align-self: center;
+				font-size: 24px;
+			}
+			#close {
+				grid-area: d;
+				border: 1px solid #444444;
+				border-radius: 16px;
+				background-color: #DD0000;
+				width: 80px;
+				height: 40px;
+				justify-self: flex-end;
+				margin-right: 8px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="timeline-container" >
+
+		</div>
+		<div id="background">
+			<div id="info-container" >
+				<span id="info-name" ></span>
+				<span id="info-date" ></span>
+				<span id="info-description" ></span>
+				<button id="close" >Close</button>
+			</div>
+		</div>
+		<script type="text/javascript">
+			var events = [
+				{ name: 'Attentat', date: '28.06.1914', description: 'Der österreichische Thronfolger Franz Ferdinand und seine Frau werden in Sarajevo von serbischen Nationalisten ermordet.' },
+				{ name: 'Österreich Ungarn Forderung', date: '23.07.1914', description: 'Österreich-Ungarn stellt Serbien ein Ultimatum mit nicht annehmbaren Forderungen.' },
+				{ name: 'Österreich Ungarn <> Serbien Krieg', date: '28.07.1914', description: 'Österreich-Ungarn erklärt Serbien den Krieg.' },
+				{ name: 'Russland macht sich mobil', date: '30.07.1914', description: 'Russland beginnt mit der Mobilmachung.' },
+				{ name: 'Deutschland erklärt Russland Krieg, Schliefen Plan', date: '01.08.1914', description: 'Deutschland erklärt Russland den Krieg. Frankreich macht mobil. Nun greift der Schlieffen-Plan: Da der deutsche Generalstab annimmt, dass es einige Zeit dauern werde, bis Russland mobilgemacht hat, soll Frankreich in einem schnellen Feldzug besiegt werden. Die frei gewordenen Truppen sollen danach an der Ostfront kämpfen.' },
+				{ name: 'Deutschland erklärt Frankreich Krieg', date: '03.08.1914', description: 'Deutschland erklärt Frankreich den Krieg.' },
+				{ name: 'Russland greift Preußen an', date: '15.08.1914', description: 'Zwei russische Armeen mit insgesamt 650.000 Mann dringen in Ostpreußen ein. Russland konnte schneller mobilmachen als erwartet.' },
+				{ name: 'Japan erklärt Mittelmächten Krieg', date: '23.08.1914', description: 'Japan erklärt den Mittelmächten den Krieg. Im November nehmen japanische Truppen das deutsche Pachtgebiet Kiautschou in China ein.' },
+				{ name: 'Togo kapituliert', date: '27.08.1914', description: 'Die deutsche Kolonie Togo kapituliert. Neuseeländische Truppen besetzen am 29. August die deutsche Kolonie auf den Samoa-Inseln.' },
+				{ name: 'Deutsche Schützengräben in Frankreich', date: '13-28.09.1914', description: 'An der Aisne in Nordfrankreich legen die Deutschen erstmals Schützengräben zur Verteidigung an.' },
+				{ name: 'Osmanische Reich unterstützt Mittelmächte', date: '29.10.1914', description: 'Das Osmanische Reich tritt auf der Seite der Mittelmächte in den Weltkrieg ein.' },
+				{ name: 'Russland erklärt Osmanischem Reich Krieg', date: '02.11.1914', description: 'Russland erklärt dem Osmanischen Reich den Krieg. Großbritannien und Frankreich folgen in den nächsten Tagen. Großbritannien erklärt die Nordsee zum Kriegsgebiet, die Seeblockade soll das Kaiserreich wirtschaftlich in die Knie zwingen.' },
+				{ name: 'Falkenhayn wird ausgetauscht', date: '18.11.1914', description: 'Der deutsche Generalstabschef von Falkenhayn fordert die Regierung auf, mit Russland oder Frankreich einen Separatfrieden zu schließen. Ein militärischer Erfolg gegen zwei Gegner sei nicht mehr möglich.' },
+				{ name: 'Nordsee & Britische Inseln > Kriegsgebiet', date: '04.02.1915', description: 'Deutschland erklärt die Nordsee um die Britischen Inseln zur Kriegszone. Der U-Boot-Krieg gegen alliierte und neurale Handelsschiffe beginnt.' },
+				{ name: 'Deutschland setzt Gas ein', date: '22.04.1915', description: 'In Ypern setzen die Deutschen erstmals Gas als Waffe ein und töten damit 3.000 Soldaten.' },
+				{ name: 'Italien unterstützt Entente', date: '26.04.1914', description: 'Aufseiten der Entente tritt Italien in den Krieg ein.' },
+				{ name: 'Krieg zwischen Italien & Österreich', date: '23.06.1915', description: 'Beginn des Gebirgskriegs zwischen österreichischen und italienischen Truppen.' },
+				{ name: 'Deutschland beschränkt U-Boot Krieg', date: '18.09.1915', description: 'Aufgrund des drohenden Kriegseintritts der USA beschränkt Deutschland den U-Boot-Krieg.' },
+				{ name: 'Bulgarien unterstützt Mittelmächte', date: '14.10.1915', description: 'Bulgarien tritt auf der Seite der Mittelmächte in den Krieg ein.' },
+				{ name: 'Wiederaufnahme vom U-Boot Krieg', date: '29.02.1916', description: 'Deutschland nimmt den U-Boot-Krieg gegen bewaffnete Handelsschiffe wieder auf. Admiral von Tirpitz kann sich mit seiner Forderung nach dem uneingeschränkten U-Boot-Krieg nicht durchsetzen und tritt Mitte März zurück.' },
+				{ name: 'Seeschlacht Deutschland & GB', date: '31.05.1916', description: 'Im Skagerrak, der Nordsee zwischen Dänemark und Norwegen, treffen die britische und die deutsche Flotte aufeinander. Das größte Seegefecht in der Geschichte endet unentschieden.' },
+				{ name: 'Rumänien unterstützt Entente', date: '17.08.1916', description: 'Rumänien tritt der Entente bei.' },
+				{ name: 'GB setzt Panzer ein', date: '15.09.1916', description: 'Die Briten setzen an der Somme erstmals Panzer ein.' },
+				{ name: 'Umstrukturierung', date: '30.09.1916', description: 'Die Oberste Heeresleitung erlässt das Hindenburg-Programm. Die Munitionsproduktion soll bis zum kommenden Frühjahr verdoppelt, die von Geschützen und Maschinengewehren verdreifacht werden. Alle verfügbaren Arbeitskräfte im Kaiserreich werden mobilisiert, Kriegsgefangene und Zivilisten aus besetzten Gebieten zur Arbeit zwangs-verpflichtet.' },
+				{ name: 'Frankreich erobert in Verdun', date: '24.10.1916', description: 'Die Franzosen beginnen mit der Rückeroberung der Festungsbauten bei Verdun. Bis Mitte Dezember entscheiden sie die Schlacht für sich.' },
+				{ name: 'Österreich erobert Bukarest & Teile Rumäniens', date: '06.12.1916', description: 'Österreichische und deutsche Truppen nehmen Bukarest ein. Bis zum Jahresende besetzen sie einen Großteil Rumäniens.' },
+				{ name: 'USA erklärt Deutschland Krieg', date: '06.04.1917', description: 'Die Vereinigten Staaten erklären Deutschland den Krieg.' },
+				{ name: 'Innenpolitische Reformen', date: '07.04.1917', description: 'In seiner Osterbotschaft verspricht Wilhelm II. innenpolitische Reformen.' },
+				{ name: 'Massenstreiks in Deutschland', date: '04.1917', description: 'In Berlin, Leipzig und anderen deutschen Städten kommt es zu Massenstreiks.' },
+				{ name: 'China erklärt Mittelmächten Krieg', date: '14.08.1917', description: 'China erklärt den Mittelmächten den Krieg.' },
+				{ name: 'Forderung Kriegsende', date: '28.01.1918', description: 'In Berlin und anderen Städten streiken die Arbeiter und fordern ein Ende des Krieges sowie innere Reformen.' },
+				{ name: 'Deutschland & Russland Frieden', date: '03.03.1918', description: 'Deutschland und Russland schließen den von Deutschland diktierten Frieden von Brest-Litowsk.' },
+				{ name: 'Neuer Reichskanzler, Waffenstillstand', date: '03.10.1918', description: 'Max von Baden wird zum neuen Reichskanzler berufen. Die Reichsleitung richtet ein Ersuchen um Waffenstillstand an den amerikanischen Präsidenten. Die USA fordern daraufhin in mehreren Noten die Abschaffung der Monarchie und eine dauerhafte Abrüstung Deutschlands.' },
+				{ name: 'Kaiser Wilhelm II Rücktritt', date: '09.11.1918', description: 'Der Kanzler Max von Baden erklärt die Abdankung des Kaisers. Wilhelm II. flüchtet in die Niederlande. Philipp Scheidemann (SPD) und der Sozialist Karl Liebknecht rufen unabhängig voneinander die Republik aus. Friedrich Ebert (SPD) wird am 10. November zum Vorsitzenden des Rates der Volksbeauftragten ernannt.' },
+				{ name: 'Deutschland & Entente Waffenstillstand', date: '11.11.1918', description: 'In einem Eisenbahnwagon in Compiégne bei Paris unterzeichnet Matthias Erzberger den Waffenstillstand mit den Entente- Staaten.' },
+				{ name: 'Pariser Friedenskonferenz', date: '18.01.1919', description: 'Die Pariser Friedenskonferenz beginnt ohne Beteiligung der Mittelmächte in Versailles. Der Vertrag wird Deutschland als Kriegsschuldigen benennen und die Landkarte Europas verändern. Langfristig gelingt es nicht, den Frieden in der Welt zu sichern.' }
+			]
+			const timelineContainer = document.getElementById("timeline-container");
+			const nameInfo = document.getElementById("info-name");
+			const dateInfo = document.getElementById("info-date");
+			const descriptionInfo = document.getElementById("info-description");
+			const infoWindow = document.getElementById("background");
+			const close = document.getElementById("close");
+
+			// assuming your object array is called "events"
+			for (let i = 0; i < events.length; i++) {
+			  const event = events[i];
+
+			  // create button element
+			  const button = document.createElement("button");
+			  button.classList.add("event-container");
+
+			  // create image element
+			  const image = document.createElement("img");
+			  image.classList.add("event-img");
+			  image.setAttribute("src", `./${i}.png`);
+			  button.appendChild(image);
+
+			  // create event date span element
+			  const eventDate = document.createElement("span");
+			  eventDate.classList.add("event-date");
+			  eventDate.textContent = event.date;
+			  button.appendChild(eventDate);
+
+			  // create event name span element
+			  const eventName = document.createElement("span");
+			  eventName.classList.add("event-name");
+			  eventName.textContent = event.name;
+			  button.appendChild(eventName);
+
+			  // add click event listener to button
+			  button.addEventListener("click", function() {
+			    // update information elements with corresponding array element
+			    infoWindow.style.display = 'flex'
+			    nameInfo.textContent = event.name;
+			    dateInfo.textContent = event.date;
+			    descriptionInfo.textContent = event.description;
+			  });
+
+			  // append button element to timeline container
+			  timelineContainer.appendChild(button);
+			}
+			close.addEventListener('click', ()=> {
+				infoWindow.style.display = 'none'
+			})
+		</script>
+	</body>
+</html>
